@@ -1,30 +1,3 @@
-// import { NextApiRequest, NextApiResponse } from 'next';
-// import QuestionGenerator from '@/app/lib/models/QuestionGenerator';
-
-// export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-//     if (req.method !== 'POST') {
-//         res.setHeader('Allow', ['POST']);
-//         res.status(405).end(`Method ${req.method} Not Allowed`);
-//         return;
-//     }
-
-//     const { topic } = req.body;
-
-//     if (!topic) {
-//         res.status(400).json({ error: 'Topic is required' });
-//         return;
-//     }
-
-//     try {
-//         const question = await QuestionGenerator.generateAndSaveQuestion(topic);
-//         // Send only the question data in the response, not the entire MongoDB object
-//         res.status(200).json({ id: question.data.id, title: question.data.title });
-//     } catch (error: any) {
-//         console.error('Error generating question:', error.message); 
-//         res.status(500).json({ error: error.message });
-//     }
-// }
-
 import { NextApiRequest, NextApiResponse } from 'next';
 import QuestionGenerator from '@/app/lib/models/QuestionGenerator';
 
@@ -45,7 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
         const question = await QuestionGenerator.generateAndSaveQuestion(topic);
 
-        // Extract only the necessary fields to avoid circular structure issues
         const responseData = {
             id: question.data.id,
             available: question.data.available,

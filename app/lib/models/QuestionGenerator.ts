@@ -71,7 +71,7 @@ class QuestionGenerator {
         await collection.insertOne(questionData);
 
         // Create and return the Question instance
-        const question = await Question.create(questionData.id, questionData);
+        const question = await Question.create(questionData.id);
         return question;
     }
 
@@ -101,7 +101,14 @@ class QuestionGenerator {
         Provide a detailed explanation of each test case result. 
         Return the response in the following JSON format.
         Dont give any other response only the JSON format as I given below not even a word or character or space to be given in the response.
-        just give me an JSON format as I given below.:
+        just give me an JSON format as I given below.
+        Dont greet, dont say anything else othere than just giving me the JSON format as I given below.
+        I need the input that i given
+        expected output
+        passed or not that particular output
+        errorMessage if any
+        so this is how the response should be given in the JSON format. 
+        i want it to be an array of objects.:
         {
             "allPassed": true/false,
             "results": [
@@ -134,12 +141,15 @@ class QuestionGenerator {
             const data = response.data;
             // console.log(data);
             console.log(response);
-
-            if (data.choices && data.choices.length > 0) {
-                const verificationResult = JSON.parse(data.choices[0].message.content.trim());
-                return verificationResult;
-            } else {
-                throw new Error('Failed to verify answer: No choices returned');
+            try {
+                if (data.choices && data.choices.length > 0) {
+                    const verificationResult = JSON.parse(data.choices[0].message.content.trim());
+                    return verificationResult;
+                } else {
+                    throw new Error('Failed to verify answer: No choices returned');
+                }
+            } catch {
+                throw new Error("failed to verify", data);
             }
         } catch (error: any) {
             console.error('Error in verifyAnswer:', error);
