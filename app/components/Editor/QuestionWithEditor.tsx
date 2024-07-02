@@ -63,7 +63,7 @@ const QuestionWithEditor: React.FC<QuestionWithEditorProps> = ({ question }) => 
                 <select
                     className="select select-bordered max-w-xs mb-4 cursor-pointer text-white text-sm"
                     value={language.value}
-                    onChange={(e) => setLanguage(e.target.value)}
+                    onChange={(e) => setLanguage(e.target)}
                 >
                     {languages.map((language, index) => (
                         <option key={index} value={language.value}>
