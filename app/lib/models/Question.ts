@@ -1,9 +1,12 @@
 import { Collection } from 'mongodb';
 import DatabaseConnection from '@/app/lib/DatabaseConnection';
+import uuid from 'uuid';
 
 class Question {
     public data: any = {};
     private collection!: Collection;
+    id: string | undefined;
+
 
     private constructor() { }
 

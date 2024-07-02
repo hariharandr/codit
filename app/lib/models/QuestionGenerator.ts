@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import fetch from 'node-fetch';
+import axios from 'axios';
 import Question from '@/app/lib/models/Question';
 
 class QuestionGenerator {
@@ -33,30 +33,22 @@ class QuestionGenerator {
         }`;
 
         try {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
+            const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+                model: 'gpt-4',
+                messages: [
+                    { role: 'system', content: 'You are a helpful assistant.' },
+                    { role: 'user', content: prompt }
+                ],
+                max_tokens: 1500,
+                temperature: 0.7
+            }, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${this.apiKey}`
-                },
-                body: JSON.stringify({
-                    model: 'gpt-4',
-                    messages: [
-                        { role: 'system', content: 'You are a helpful assistant.' },
-                        { role: 'user', content: prompt }
-                    ],
-                    max_tokens: 1500,
-                    temperature: 0.7
-                })
+                }
             });
 
-            if (!response.ok) {
-                const errorData: any = await response.json();
-                console.error('OpenAI API error response:', errorData);
-                throw new Error(`Failed to generate question: ${errorData.error.message}`);
-            }
-
-            const data: any = await response.json();
+            const data = response.data;
             console.log('OpenAI API response:', data);
 
             if (data.choices && data.choices.length > 0) {
@@ -79,7 +71,7 @@ class QuestionGenerator {
         await collection.insertOne(questionData);
 
         // Create and return the Question instance
-        const question = await Question.create(questionData.id);
+        const question = await Question.create(questionData.id, questionData);
         return question;
     }
 
@@ -105,7 +97,11 @@ class QuestionGenerator {
         Test Cases:
         ${JSON.stringify(testCases)}
 
-        Verify if the provided code passes all the test cases. Return the response in the following JSON format only this json give me only josn nothing else at all not even a single character or a space in the end or start of the json:
+        Verify if the provided code passes all the test cases. 
+        Provide a detailed explanation of each test case result. 
+        Return the response in the following JSON format.
+        Dont give any other response only the JSON format as I given below not even a word or character or space to be given in the response.
+        just give me an JSON format as I given below.:
         {
             "allPassed": true/false,
             "results": [
@@ -120,42 +116,34 @@ class QuestionGenerator {
         }`;
 
         try {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
+            const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+                model: 'gpt-4',
+                messages: [
+                    { role: 'system', content: 'You are a helpful assistant.' },
+                    { role: 'user', content: prompt }
+                ],
+                max_tokens: 1500,
+                temperature: 0.7
+            }, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${this.apiKey}`
-                },
-                body: JSON.stringify({
-                    model: 'gpt-4',
-                    messages: [
-                        { role: 'system', content: 'You are a helpful assistant.' },
-                        { role: 'user', content: prompt }
-                    ],
-                    max_tokens: 1500,
-                    temperature: 0.7
-                })
+                }
             });
 
-            if (!response.ok) {
-                const errorData: any = await response.json();
-                console.error('OpenAI API error response:', errorData);
-                throw new Error(`Failed to verify answer: ${errorData.error.message}`);
+            const data = response.data;
+            // console.log(data);
+            console.log(response);
+
+            if (data.choices && data.choices.length > 0) {
+                const verificationResult = JSON.parse(data.choices[0].message.content.trim());
+                return verificationResult;
+            } else {
+                throw new Error('Failed to verify answer: No choices returned');
             }
-
-            const data: any = await response.json();
-
-            const responseString = data.choices[0].message.content.trim();
-            const jsonString = responseString.match(/{[\s\S]*}/);
-            if (!jsonString) {
-                throw new Error('Failed to verify answer: Response is not valid JSON');
-            }
-
-            const verificationResult = JSON.parse(jsonString[0]);
-            return verificationResult;
         } catch (error: any) {
             console.error('Error in verifyAnswer:', error);
-            throw new Error(`Failed to verify answer: ${error.message}`);
+            throw new Error('Failed to verify answer. Please Try Again by submitting the answer.');
         }
     }
 }

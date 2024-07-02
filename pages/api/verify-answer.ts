@@ -63,7 +63,6 @@
 //         res.status(500).json({ error: error.message });
 //     }
 // }
-
 import { NextApiRequest, NextApiResponse } from 'next';
 import QuestionGenerator from '@/app/lib/models/QuestionGenerator';
 
