@@ -87,7 +87,7 @@ export default function Home() {
           )}
         </div>
         <div className="divider divider-horizontal"></div>
-        <div className="w-1/2 p-1 flex flex-col">
+        <div className="w-1/2 p-1 flex flex-col h-screen">
           <QuestionWithEditor question={question} />
         </div>
       </div>
