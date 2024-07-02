@@ -119,7 +119,7 @@ const QuestionWithEditor: React.FC<QuestionWithEditorProps> = ({ question }) => 
             </div>
             {!question && !loading && (
                 <div className="absolute inset-0 flex items-center justify-center z-10 bg-neutral bg-opacity-75">
-                    <p>Press "Generate Question" to start...</p>
+                    <p>Press Generate Question to start...</p>
                 </div>
             )}
         </div>
