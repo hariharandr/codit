@@ -57,7 +57,7 @@ class QuestionGenerator {
                 throw new Error('Failed to generate question: No choices returned');
             }
         } catch (error) {
-            console.error('Error in generatePrompt:', error);
+            console.error('Error in generatePrompt:', error.message);
             throw new Error('Failed to generate question.');
         }
     }
@@ -66,17 +66,14 @@ class QuestionGenerator {
         const questionData = await this.generatePrompt(topic);
         questionData.id = uuidv4();
 
-        // Save the generated question data to the collection
         const collection = await Question.getCollection();
         await collection.insertOne(questionData);
 
-        // Create and return the Question instance
         const question = await Question.create(questionData.id);
         return question;
     }
 
     public static async verifyAnswer(questionId: string, answer: string, language: string): Promise<any> {
-        // Retrieve the question and test cases from the database
         const question = await Question.create(questionId);
 
         if (!question) {
@@ -85,7 +82,6 @@ class QuestionGenerator {
 
         const testCases = question.data.test_cases;
 
-        // Format the prompt for verification
         const prompt = `
         Question: ${question.data.description}
 
@@ -100,15 +96,8 @@ class QuestionGenerator {
         Verify if the provided code passes all the test cases. 
         Provide a detailed explanation of each test case result. 
         Return the response in the following JSON format.
-        Dont give any other response only the JSON format as I given below not even a word or character or space to be given in the response.
-        just give me an JSON format as I given below.
-        Dont greet, dont say anything else othere than just giving me the JSON format as I given below.
-        I need the input that i given
-        expected output
-        passed or not that particular output
-        errorMessage if any
-        so this is how the response should be given in the JSON format. 
-        i want it to be an array of objects.:
+        
+        IMPORTANT: Do not include any additional text, explanations, or greetings. Only return the JSON format. The format should be as follows:
         {
             "allPassed": true/false,
             "results": [
@@ -139,8 +128,6 @@ class QuestionGenerator {
             });
 
             const data = response.data;
-            // console.log(data);
-            console.log(response);
             try {
                 if (data.choices && data.choices.length > 0) {
                     const verificationResult = JSON.parse(data.choices[0].message.content.trim());
@@ -148,12 +135,13 @@ class QuestionGenerator {
                 } else {
                     throw new Error('Failed to verify answer: No choices returned');
                 }
-            } catch {
+            } catch (error) {
+                console.error('Error parsing JSON:', error.message);
                 throw new Error("failed to verify", data);
             }
         } catch (error: any) {
-            console.error('Error in verifyAnswer:', error);
-            throw new Error('Failed to verify answer. Please Try Again by submitting the answer.');
+            console.error('Error in verifyAnswer:', error.message);
+            throw new Error('Failed to verify answer. Please try again by submitting the answer.');
         }
     }
 }

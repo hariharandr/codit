@@ -98,20 +98,19 @@ const QuestionWithEditor: React.FC<QuestionWithEditorProps> = ({ question }) => 
                     <div className="text-red-500">{error}</div>
                 ) : results ? (
                     <div>
-                        <h2 className="text-lg font-bold mb-2">Results</h2>
-                        {results.allPassed ? (
+                        <h2 className="text-lg font-bold mb-2" data-result={results}>Results</h2>
+                        {results.allPassed && (
                             <p className="text-green-500">All test cases passed!</p>
-                        ) : (
-                            results.results.map((result, index) => (
-                                <div key={index} className="p-2 my-2 border border-gray-600 rounded">
-                                    <p><strong>Input:</strong> {JSON.stringify(result.input)}</p>
-                                    <p><strong>Expected Output:</strong> {result.expectedOutput}</p>
-                                    <p><strong>Actual Output:</strong> {result.actualOutput}</p>
-                                    <p><strong>Passed:</strong> {result.passed ? 'Yes' : 'No'}</p>
-                                    {result.errorMessage && <p><strong>Error:</strong> {result.errorMessage}</p>}
-                                </div>
-                            ))
                         )}
+                        {results.results.map((result, index) => (
+                            <div key={index} className="p-2 my-2 border border-gray-600 rounded" data-result={result}>
+                                <p><strong>Input:</strong> {JSON.stringify(result.input)}</p>
+                                <p><strong>Expected Output:</strong> {result.expectedOutput}</p>
+                                <p><strong>Actual Output:</strong> {result.actualOutput}</p>
+                                <p><strong>Passed:</strong> {result.passed ? 'Yes' : 'No'}</p>
+                                {result.errorMessage && <p><strong>Error:</strong> {result.errorMessage}</p>}
+                            </div>
+                        ))}
                     </div>
                 ) : (
                     <p className="text-gray-400">Results will be shown here after you submit your code.</p>
@@ -119,7 +118,7 @@ const QuestionWithEditor: React.FC<QuestionWithEditorProps> = ({ question }) => 
             </div>
             {!question && !loading && (
                 <div className="absolute inset-0 flex items-center justify-center z-10 bg-neutral bg-opacity-75">
-                    <p>Press Generate Question to start...</p>
+                    <p>Press "Generate Question" to start...</p>
                 </div>
             )}
         </div>
