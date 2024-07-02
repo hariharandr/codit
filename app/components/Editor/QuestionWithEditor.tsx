@@ -58,10 +58,10 @@ const QuestionWithEditor: React.FC<QuestionWithEditorProps> = ({ question }) => 
     };
 
     return (
-        <div className="flex flex-col h-full bg-neutral p-2 rounded-lg relative">
+        <div className="flex flex-col h-full bg-neutral p-4 rounded-lg relative">
             <div className="flex items-center justify-between mb-4">
                 <select
-                    className="select select-bordered max-w-xs mb-4 cursor-pointer text-white text-sm"
+                    className="select select-bordered max-w-xs cursor-pointer text-white text-sm"
                     value={language.value}
                     onChange={(e) => setLanguage(languages.find(lang => lang.value === e.target.value) || languages[0])}
                 >
@@ -72,7 +72,7 @@ const QuestionWithEditor: React.FC<QuestionWithEditorProps> = ({ question }) => 
                     ))}
                 </select>
                 <button
-                    className="btn btn-sm"
+                    className="btn btn-primary btn-sm"
                     onClick={handleSubmit}
                     disabled={!question || !code}
                 >
@@ -80,7 +80,7 @@ const QuestionWithEditor: React.FC<QuestionWithEditorProps> = ({ question }) => 
                 </button>
             </div>
             <MonacoEditor
-                height="calc(100% - 120px)"
+                height="calc(100% - 180px)"
                 width="100%"
                 language={language.value}
                 value={code}
@@ -98,12 +98,14 @@ const QuestionWithEditor: React.FC<QuestionWithEditorProps> = ({ question }) => 
                     <div className="text-red-500">{error}</div>
                 ) : results ? (
                     <div>
-                        <h2 className="text-lg font-bold mb-2" data-result={results}>Results</h2>
-                        {results.allPassed && (
-                            <p className="text-green-500">All test cases passed!</p>
-                        )}
+                        <h2 className="text-lg font-bold mb-2">Results</h2>
+                        {results.allPassed ? (
+                            <div className="bg-green-100 text-green-700 p-2 rounded mb-2">
+                                <p>All test cases passed!</p>
+                            </div>
+                        ) : null}
                         {results.results.map((result, index) => (
-                            <div key={index} className="p-2 my-2 border border-gray-600 rounded" data-result={result}>
+                            <div key={index} className="bg-white p-2 mb-2 border border-gray-300 rounded">
                                 <p><strong>Input:</strong> {JSON.stringify(result.input)}</p>
                                 <p><strong>Expected Output:</strong> {result.expectedOutput}</p>
                                 <p><strong>Actual Output:</strong> {result.actualOutput}</p>
